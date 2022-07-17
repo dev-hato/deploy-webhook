@@ -1,15 +1,16 @@
 package main
 
 import (
-	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/go-playground/webhooks/v6/github"
-	"github.com/joho/godotenv"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
+
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-playground/webhooks/v6/github"
+	"github.com/joho/godotenv"
 )
 
 func closeLogFile(logfile *os.File) {
