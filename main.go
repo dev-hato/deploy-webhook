@@ -19,20 +19,6 @@ func closeLogFile(logfile *os.File) {
 	}
 }
 
-func getTagName(request *http.Request) (tagName string, err error) {
-	webhook, err := github.New(github.Options.Secret(os.Getenv("GITHUB_WEBHOOK_SECRET")))
-	if err != nil {
-		return "", err
-	}
-
-	payload, err := webhook.Parse(request, github.ReleaseEvent)
-	if err != nil {
-		return "", err
-	}
-
-	return payload.(github.ReleasePayload).Release.TagName, nil
-}
-
 func switchTag(tagName string) error {
 	repo, err := git.PlainOpen(os.Getenv("LOCAL_REPO_PATH"))
 	if err != nil {
@@ -64,11 +50,28 @@ func switchTag(tagName string) error {
 }
 
 func webhookHandle(response http.ResponseWriter, request *http.Request) {
-	tagName, err := getTagName(request)
+	webhook, err := github.New(github.Options.Secret(os.Getenv("GITHUB_WEBHOOK_SECRET")))
 	if err != nil {
 		log.Panicln(err)
 	}
 
+	payload, err := webhook.Parse(request, github.PingEvent, github.ReleaseEvent)
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	if _, ok := payload.(github.PingPayload); ok {
+		log.Println("ping!")
+		response.WriteHeader(http.StatusOK)
+		return
+	}
+
+	release, ok := payload.(github.ReleasePayload)
+	if !ok {
+		log.Panicln("do not get release event...")
+	}
+
+	tagName := release.Release.TagName
 	log.Println("Tag:" + tagName)
 
 	if err = switchTag(tagName); err != nil {
