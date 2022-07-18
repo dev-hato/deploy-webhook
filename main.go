@@ -19,15 +19,29 @@ func closeLogFile(logfile *os.File) {
 	}
 }
 
-func switchTag(tagName string) error {
+func getPayload(request *http.Request) (payload interface{}, err error) {
+	webhook, err := github.New(github.Options.Secret(os.Getenv("GITHUB_WEBHOOK_SECRET")))
+	if err != nil {
+		return
+	}
+
+	payload, err = webhook.Parse(request, github.PingEvent, github.ReleaseEvent)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func switchTag(tagName string) (err error) {
 	repo, err := git.PlainOpen(os.Getenv("LOCAL_REPO_PATH"))
 	if err != nil {
-		return err
+		return
 	}
 
 	worktree, err := repo.Worktree()
 	if err != nil {
-		return err
+		return
 	}
 
 	if err = worktree.Pull(&git.PullOptions{RemoteName: "origin"}); err != nil {
@@ -36,26 +50,21 @@ func switchTag(tagName string) error {
 		if errMsg == "already up-to-date" {
 			log.Println(errMsg)
 		} else {
-			return err
+			return
 		}
 	}
 
 	checkoutOptions := git.CheckoutOptions{Branch: plumbing.ReferenceName("refs/tags/" + tagName)}
 
 	if err = worktree.Checkout(&checkoutOptions); err != nil {
-		return err
+		return
 	}
 
-	return nil
+	return
 }
 
 func webhookHandle(response http.ResponseWriter, request *http.Request) {
-	webhook, err := github.New(github.Options.Secret(os.Getenv("GITHUB_WEBHOOK_SECRET")))
-	if err != nil {
-		log.Panicln(err)
-	}
-
-	payload, err := webhook.Parse(request, github.PingEvent, github.ReleaseEvent)
+	payload, err := getPayload(request)
 	if err != nil {
 		log.Panicln(err)
 	}
