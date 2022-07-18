@@ -25,12 +25,7 @@ func getPayload(request *http.Request) (payload interface{}, err error) {
 		return
 	}
 
-	payload, err = webhook.Parse(request, github.PingEvent, github.ReleaseEvent)
-	if err != nil {
-		return
-	}
-
-	return
+	return webhook.Parse(request, github.PingEvent, github.ReleaseEvent)
 }
 
 func switchTag(tagName string) (err error) {
@@ -55,12 +50,7 @@ func switchTag(tagName string) (err error) {
 	}
 
 	checkoutOptions := git.CheckoutOptions{Branch: plumbing.ReferenceName("refs/tags/" + tagName)}
-
-	if err = worktree.Checkout(&checkoutOptions); err != nil {
-		return
-	}
-
-	return
+	return worktree.Checkout(&checkoutOptions)
 }
 
 func webhookHandle(response http.ResponseWriter, request *http.Request) {
