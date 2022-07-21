@@ -31,7 +31,7 @@ jobs:
           go install golang.org/x/tools/cmd/goimports@latest
       - name: Format files
         run: |
-          go mod tidy
+          go mod tidy -go="$(go version | awk '{print $3}' | sed -e 's/go//g')"
           goimports -l -w .
       - uses: dev-hato/actions-diff-pr-management@v0.0.8
         with:
