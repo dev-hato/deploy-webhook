@@ -3,11 +3,11 @@ GitHubにてDocker Composeで動作するシステムのリリースを作成し
 
 ## 動作方法
 ### オンプレでの作業
-#### デプロイしたいシステム
+#### デプロイしたいシステムに対する作業
 1. デプロイしたいシステムをcloneします。
 2. オンプレ用の `docker-compose.yml` の差分である `onpremises.docker-compose.yml` を配置します。
 
-#### deploy-webhook
+#### deploy-webhookに対する作業
 1. 本リポジトリをcloneします。
     ```sh
     git clone git@github.com:dev-hato/deploy-webhook.git
