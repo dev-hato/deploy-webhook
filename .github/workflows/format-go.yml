@@ -34,7 +34,7 @@ jobs:
           go_version="$(go version | awk '{print $3}' | awk -F . 'BEGIN {OFS="."} {print $1,$2}' | sed -e 's/go//g')"
           go mod tidy -go="${go_version}"
           goimports -l -w .
-      - uses: dev-hato/actions-diff-pr-management@v0.0.8
+      - uses: dev-hato/actions-diff-pr-management@v1.0.2
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           branch-name-prefix: fix-format
