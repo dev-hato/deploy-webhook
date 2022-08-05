@@ -116,3 +116,5 @@ Temporary Items
 .env
 deploy-webhook
 *.log
+
+node_modules
