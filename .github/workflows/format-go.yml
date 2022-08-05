@@ -1,0 +1,47 @@
+---
+name: format-go
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - closed
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  format-go:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v3.0.2
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: go.mod
+      - name: Install goimports
+        run: |
+          echo "$(go env GOPATH)/bin" >> "${GITHUB_PATH}"
+          go install golang.org/x/tools/cmd/goimports@latest
+      - name: Format files
+        run: |
+          go_version="$(go version | awk '{print $3}' | awk -F . 'BEGIN {OFS="."} {print $1,$2}' | sed -e 's/go//g')"
+          go mod tidy -go="${go_version}"
+          goimports -l -w .
+      - uses: dev-hato/actions-diff-pr-management@v1.0.2
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          branch-name-prefix: fix-format
+          pr-title-prefix: formatが間違ってたので直してあげたよ！
+          repo-name: ${{ github.event.pull_request.head.repo.full_name }}
