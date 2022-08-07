@@ -70,8 +70,8 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
-      - run: sudo chown -R 1000:1000 server/
-      - run: cat .env.example >>"$GITHUB_ENV"
+      - run: cat .env.example >> "$GITHUB_ENV"
+      - run: echo "LOCAL_REPO_PATH=." >> "$GITHUB_ENV"
       - run: echo "TAG_NAME=${HEAD_REF//\//-}" >> "$GITHUB_ENV"
         env:
           HEAD_REF: ${{github.head_ref}}
@@ -84,7 +84,7 @@ jobs:
         if: github.event_name != 'pull_request' || github.event.action != 'closed'
         run: |
           CMD="go version | awk '{print \$3}' | sed -e 's/^go//g'"
-          go_version=$(docker compose -f docker-compose.yml -f dev.docker-compose.yml run server sh -c "${CMD}")
+          go_version=$(docker compose -f docker-compose.yml -f dev.docker-compose.yml run deploy-webhook sh -c "${CMD}")
           echo "Go version:" "${go_version}"
           echo "::set-output name=go_version::${go_version}"
       - name: Set up Go
@@ -100,7 +100,7 @@ jobs:
       - name: Format files
         if: github.event_name != 'pull_request' || github.event.action != 'closed'
         run: |
-          go_version=$(grep runtime app.yaml | sed -e 's/runtime: go\([0-9]\)\([0-9]*\)/\1.\2/g')
+          go_version="$(go version | awk '{print $3}' | awk -F . 'BEGIN {OFS="."} {print $1,$2}' | sed -e 's/go//g')"
           go mod tidy -go="${go_version}"
           goimports -l -w .
       - uses: dev-hato/actions-diff-pr-management@v1.0.3
