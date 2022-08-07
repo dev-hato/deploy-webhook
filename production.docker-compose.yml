@@ -1,0 +1,15 @@
+---
+version: "3.8"
+services:
+  deploy-webhook:
+    build:
+      target: main
+      cache_from:
+        - ghcr.io/${REPOSITORY:-dev-hato/deploy-webhook}/deploy-webhook:${TAG_NAME:-latest}
+        - ghcr.io/${REPOSITORY:-dev-hato/deploy-webhook}/deploy-webhook
+        - ghcr.io/${REPOSITORY:-dev-hato/deploy-webhook}/deploy-webhook-dev:${TAG_NAME:-latest}
+        - ghcr.io/${REPOSITORY:-dev-hato/deploy-webhook}/deploy-webhook-dev
+    image: ghcr.io/${REPOSITORY:-dev-hato/deploy-webhook}/deploy-webhook:${TAG_NAME:-latest}
+    volumes:
+      - ${LOCAL_REPO_PATH}:/repo
+      - /var/run/docker.sock:/var/run/docker.sock

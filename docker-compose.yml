@@ -1,0 +1,16 @@
+---
+version: "3.8"
+services:
+  deploy-webhook:
+    build:
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+    environment:
+      GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET}
+      PORT: ${PORT}
+    ports:
+      - "${PORT}:${PORT}"

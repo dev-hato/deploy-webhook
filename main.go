@@ -10,7 +10,6 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-playground/webhooks/v6/github"
-	"github.com/joho/godotenv"
 )
 
 func closeLogFile(logfile *os.File) {
@@ -29,7 +28,7 @@ func getPayload(request *http.Request) (payload interface{}, err error) {
 }
 
 func switchTag(tagName string) (err error) {
-	repo, err := git.PlainOpen(os.Getenv("LOCAL_REPO_PATH"))
+	repo, err := git.PlainOpen("/repo")
 	if err != nil {
 		return
 	}
@@ -51,6 +50,10 @@ func switchTag(tagName string) (err error) {
 
 	checkoutOptions := git.CheckoutOptions{Branch: plumbing.ReferenceName("refs/tags/" + tagName)}
 	return worktree.Checkout(&checkoutOptions)
+}
+
+func pingHandle(response http.ResponseWriter, _ *http.Request) {
+	response.WriteHeader(http.StatusNoContent)
 }
 
 func webhookHandle(response http.ResponseWriter, request *http.Request) {
@@ -98,11 +101,8 @@ func main() {
 	defer closeLogFile(logfile)
 	log.SetOutput(io.MultiWriter(os.Stdout, logfile))
 
-	if err := godotenv.Load(".env"); err != nil {
-		log.Panicln(err)
-	}
-
 	mux := http.NewServeMux()
+	mux.Handle("/ping", http.HandlerFunc(pingHandle))
 	mux.Handle("/webhooks", http.HandlerFunc(webhookHandle))
 
 	if err := http.ListenAndServe(":"+os.Getenv("PORT"), mux); err != nil {
