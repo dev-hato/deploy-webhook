@@ -47,7 +47,7 @@ jobs:
           DOCKER_CONTENT_TRUST: 1
         with:
           push: true
-          files: docker-compose.yml,develop.docker-compose.yml
+          files: docker-compose.yml,dev.docker-compose.yml
       - name: Build and push (production)
         uses: docker/bake-action@v2.2.0
         env:
@@ -78,13 +78,13 @@ jobs:
         if: github.event_name == 'pull_request'
       - run: echo "REPOSITORY=${{github.repository}}" >> "${GITHUB_ENV}"
       - if: github.event_name != 'pull_request' || github.event.action != 'closed'
-        run: docker compose -f docker-compose.yml -f develop.docker-compose.yml pull
+        run: docker compose -f docker-compose.yml -f dev.docker-compose.yml pull
       - name: Get Go version
         id: get_go_version
         if: github.event_name != 'pull_request' || github.event.action != 'closed'
         run: |
           CMD="go version | awk '{print \$3}' | sed -e 's/^go//g'"
-          go_version=$(docker compose -f docker-compose.yml -f develop.docker-compose.yml run server sh -c "${CMD}")
+          go_version=$(docker compose -f docker-compose.yml -f dev.docker-compose.yml run server sh -c "${CMD}")
           echo "Go version:" "${go_version}"
           echo "::set-output name=go_version::${go_version}"
       - name: Set up Go
@@ -129,7 +129,7 @@ jobs:
       - update-dockle
     strategy:
       matrix:
-        docker_compose_file_name: [ "develop.docker-compose.yml", "production.docker-compose.yml" ]
+        docker_compose_file_name: [ "dev.docker-compose.yml", "production.docker-compose.yml" ]
     env:
       DOCKER_CONTENT_TRUST: 1
     steps:
