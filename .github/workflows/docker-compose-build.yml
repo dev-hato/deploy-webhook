@@ -156,3 +156,11 @@ jobs:
             echo "> ${cmd}"
             eval "${cmd}"
           done
+
+  docker-compose-build-complete:
+    runs-on: ubuntu-latest
+    needs:
+      - format-go
+      - dockle
+    steps:
+      - run: exit 0
