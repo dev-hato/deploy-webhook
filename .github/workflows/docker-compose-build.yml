@@ -71,7 +71,6 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
       - run: cat .env.example >> "$GITHUB_ENV"
-      - run: echo "LOCAL_REPO_PATH=." >> "$GITHUB_ENV"
       - run: echo "TAG_NAME=${HEAD_REF//\//-}" >> "$GITHUB_ENV"
         env:
           HEAD_REF: ${{github.head_ref}}
