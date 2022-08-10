@@ -24,13 +24,9 @@ GitHubにてDocker Composeで動作するシステムのリリースを作成し
     * `GITHUB_WEBHOOK_SECRET`: 任意の値
     * `LOCAL_REPO_PATH`: オンプレ内のリポジトリのパス
     * `PORT`: deploy-webhookで使用するポート
-5. コードをコンパイルします。
+5. deploy-webhookを起動します。
     ```sh
-    go build -o deploy-webhook
-    ```
-6. deploy-webhookを起動します。
-    ```sh
-    ./deploy-webhook &
+    docker compose -f docker-compose.yml -f production.docker-compose.yml up --build -d
     ```
 ### GitHubのWebhook作成
 1. デプロイしたいシステムのGitHubリポジトリ上でWebhookを作成します。
