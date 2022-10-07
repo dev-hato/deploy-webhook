@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -105,7 +106,13 @@ func main() {
 	mux.Handle("/ping", http.HandlerFunc(pingHandle))
 	mux.Handle("/webhooks", http.HandlerFunc(webhookHandle))
 
-	if err := http.ListenAndServe(":"+os.Getenv("PORT"), mux); err != nil {
+	server := &http.Server{
+		Addr:         ":" + os.Getenv("PORT"),
+		Handler:      mux,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+	if err := server.ListenAndServe(); err != nil {
 		log.Panicln(err)
 	}
 }
