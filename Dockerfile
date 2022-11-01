@@ -1,4 +1,4 @@
-FROM golang:1.19.2-bullseye AS base
+FROM golang:1.19.3-bullseye AS base
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG TARGETPLATFORM
