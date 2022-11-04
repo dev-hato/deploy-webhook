@@ -83,11 +83,7 @@ jobs:
       - name: Get Go version
         id: get_go_version
         if: github.event_name != 'pull_request' || github.event.action != 'closed'
-        run: |
-          CMD="go version | awk '{print \$3}' | sed -e 's/^go//g'"
-          go_version=$(docker compose -f docker-compose.yml -f dev.docker-compose.yml run deploy-webhook sh -c "${CMD}")
-          echo "Go version:" "${go_version}"
-          echo "go_version=${go_version}" >> "${GITHUB_OUTPUT}"
+        run: bash "${GITHUB_WORKSPACE}/scripts/docker_compose_build/format_go/get_go_version.sh"
       - name: Set up Go
         uses: actions/setup-go@v3
         if: github.event_name != 'pull_request' || github.event.action != 'closed'
@@ -95,15 +91,10 @@ jobs:
           go-version: ${{steps.get_go_version.outputs.go_version}}
       - name: Install goimports
         if: github.event_name != 'pull_request' || github.event.action != 'closed'
-        run: |
-          echo "$(go env GOPATH)/bin" >> "${GITHUB_PATH}"
-          go install golang.org/x/tools/cmd/goimports@latest
+        run: bash "${GITHUB_WORKSPACE}/scripts/docker_compose_build/format_go/install_goimports.sh"
       - name: Format files
         if: github.event_name != 'pull_request' || github.event.action != 'closed'
-        run: |
-          go_version="$(go version | awk '{print $3}' | awk -F . 'BEGIN {OFS="."} {print $1,$2}' | sed -e 's/go//g')"
-          go mod tidy -go="${go_version}"
-          goimports -l -w .
+        run: bash "${GITHUB_WORKSPACE}/scripts/docker_compose_build/format_go/format_files.sh"
       - uses: dev-hato/actions-diff-pr-management@v1.0.8
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
@@ -143,19 +134,12 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
       - run: echo "REPOSITORY=${{github.repository}}" >> "${GITHUB_ENV}"
       # jscpd:ignore-end
-      - run: |
-          dockle_version="$(cat .dockle-version)"
-          curl -L -o dockle.deb "https://github.com/goodwithtech/dockle/releases/download/v${dockle_version}/dockle_${dockle_version}_Linux-64bit.deb"
-          sudo dpkg -i dockle.deb
+      - run: bash "${GITHUB_WORKSPACE}/scripts/docker_compose_build/dockle/install_dockle.sh"
       - run: docker compose -f docker-compose.yml -f ${{matrix.docker_compose_file_name}} pull
       - run: docker compose -f docker-compose.yml -f ${{matrix.docker_compose_file_name}} up -d
-      - run: |
-          for image_name in $(docker compose -f docker-compose.yml -f ${{matrix.docker_compose_file_name}} images | awk 'OFS=":" {print $2,$3}' | tail -n +2); do
-            cmd="dockle --exit-code 1 "
-            cmd+="${image_name}"
-            echo "> ${cmd}"
-            eval "${cmd}"
-          done
+      - env:
+          DOCKER_COMPOSE_FILE_NAME: ${{matrix.docker_compose_file_name}}
+        run: bash "${GITHUB_WORKSPACE}/scripts/docker_compose_build/dockle/run_dockle.sh"
 
   docker-compose-build-complete:
     runs-on: ubuntu-latest

@@ -40,7 +40,7 @@ FROM base AS develop
 
 COPY .air.toml .
 
-RUN go install github.com/cosmtrek/air@v1.27.3
+RUN go install github.com/cosmtrek/air
 
 USER nonroot
 
