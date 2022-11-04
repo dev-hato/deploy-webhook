@@ -3,7 +3,7 @@ module deploy-hato-bot
 go 1.19
 
 require (
-	github.com/cosmtrek/air v1.27.3
+	github.com/cosmtrek/air v1.40.4
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/go-playground/webhooks/v6 v6.0.1
 	golang.org/x/tools v0.2.0
