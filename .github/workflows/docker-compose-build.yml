@@ -90,7 +90,7 @@ jobs:
       - name: Format files
         if: github.event_name != 'pull_request' || github.event.action != 'closed'
         run: bash "${GITHUB_WORKSPACE}/scripts/docker_compose_build/format_go/format_files.sh"
-      - uses: dev-hato/actions-diff-pr-management@v1.1.0
+      - uses: dev-hato/actions-diff-pr-management@v1.1.1
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           branch-name-prefix: fix-format
