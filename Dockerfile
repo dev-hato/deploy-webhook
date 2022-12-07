@@ -26,7 +26,7 @@ RUN chown -R nonroot .
 COPY go.mod go.sum main.go restart.sh healthcheck.sh ./
 
 RUN mapfile -t PLATFORM < <(echo "${TARGETPLATFORM}" | tr '/' ' ') \
-    && CGO_ENABLED=0 GOOS=linux GOARCH=${PLATFORM[2]} go build -o deploy-webhook .
+    && CGO_ENABLED=1 GOOS=linux GOARCH=${PLATFORM[2]} go build -o deploy-webhook .
 
 HEALTHCHECK --interval=5s --retries=20 CMD ["./healthcheck.sh"]
 
