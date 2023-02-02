@@ -1,6 +1,6 @@
 module deploy-hato-bot
 
-go 1.19
+go 1.20
 
 require (
 	github.com/cosmtrek/air v1.41.0
