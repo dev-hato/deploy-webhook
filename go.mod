@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/cosmtrek/air v1.42.0
-	github.com/go-git/go-git/v5 v5.5.2
+	github.com/go-git/go-git/v5 v5.6.0
 	github.com/go-playground/webhooks/v6 v6.0.1
 	golang.org/x/tools v0.6.0
 )
@@ -26,7 +26,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
-	github.com/pjbgf/sha1cd v0.2.3 // indirect
+	github.com/pjbgf/sha1cd v0.3.0 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/skeema/knownhosts v1.1.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
