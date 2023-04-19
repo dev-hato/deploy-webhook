@@ -44,14 +44,14 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
       # jscpd:ignore-end
       - name: Build and push (develop)
-        uses: docker/bake-action@v3.0.0
+        uses: docker/bake-action@v3.0.1
         env:
           DOCKER_CONTENT_TRUST: 1
         with:
           push: true
           files: docker-compose.yml,dev.docker-compose.yml
       - name: Build and push (production)
-        uses: docker/bake-action@v3.0.0
+        uses: docker/bake-action@v3.0.1
         env:
           DOCKER_CONTENT_TRUST: 1
         with:
